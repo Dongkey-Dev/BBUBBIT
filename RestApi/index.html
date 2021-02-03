@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <title>Home</title>
+    <meta charset='utf-8'>
+</head>
+<body>
+    <form action="/stocks" method="POST">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
