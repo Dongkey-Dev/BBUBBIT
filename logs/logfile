@@ -167,3 +167,8 @@
 [03/Feb/2021 17:41:26] DEBUG [RestApi.GetStockPrice:97] recieved StockName = 3lts
 [03/Feb/2021 18:24:43] DEBUG [RestApi.GetStockPrice:47] paxnet URL is http://www.paxnet.co.kr/search/jongmok?kwd=3lts
 [03/Feb/2021 18:24:43] DEBUG [RestApi.GetStockPrice:97] recieved StockName = 3lts
+[03/Feb/2021 19:56:11] DEBUG [RestApi.GetStockPrice:47] paxnet URL is http://www.paxnet.co.kr/search/jongmok?kwd=3lts
+[03/Feb/2021 19:56:11] DEBUG [RestApi.GetStockPrice:97] recieved StockName = 3lts
+[08/Feb/2021 13:47:30] DEBUG [RestApi.GetStockPrice:47] paxnet URL is http://www.paxnet.co.kr/search/jongmok?kwd=삼성
+[08/Feb/2021 13:47:30] DEBUG [RestApi.GetStockPrice:67] recieved StockName = 삼성전자 005930
+[09/Feb/2021 01:41:30] INFO [RestApi.views:92] {'ROOM': '일하는방2', 'stockName': '국장', 'isKR': True}

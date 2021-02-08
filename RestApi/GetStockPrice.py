@@ -87,7 +87,7 @@ class StockGetter :
                 cv = '-'+cv
             msg = "[ " + stockName + " ]  \n" +"KRW" + nv + ", " + cv+ '  (' + cr + '%)'
 
-            return {"stockName": stockName,"InfoMsg": msg, "querySuccess": True}
+            return {"stockName": stockName,"InfoMsg": msg, "querySuccess": True,"isKR":True}
         except Exception as e : 
             return {"stockName": stockName,"InfoMsg": "Error {}".format(e), "querySuccess": False}
 
@@ -118,7 +118,7 @@ class StockGetter :
             else :
                 infomsg = "[" + stockName +"]" + "\n" + Exchange + "\n" + "[" + Date+"]" + "\n" + stockMoney +" "+ Price + ", " + Move+Percentage +"\n" + "[ Dividend yield ] : " + Dividend + "\n"
 
-            return {"stockName": stockName,"InfoMsg": infomsg, "querySuccess": True}
+            return {"stockName": stockName,"InfoMsg": infomsg, "querySuccess": True,"isKR":False}
         newUrl = list(filter(lambda x : 'investing.com' in x['href'],  list(filter(lambda x : x.get('href'), s.select('a'))) ))
         if newUrl : 
             newUrl = newUrl[0]['href']
@@ -130,6 +130,6 @@ class StockGetter :
             move = move.text 
             percentage = percentage.text
             infomsg+=price+' '+move+' '+percentage
-            return {"stockName": stockName,"InfoMsg": infomsg, "querySuccess": True}
+            return {"stockName": stockName,"InfoMsg": infomsg, "querySuccess": True,"isKR":False}
         else : 
             return {"stockName": stockName,"InfoMsg": "Error {}".format("not found stock"), "querySuccess": False}
