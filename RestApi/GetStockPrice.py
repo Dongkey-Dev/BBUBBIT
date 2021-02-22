@@ -9,7 +9,7 @@ import re
 # Create your views here.
 
 headers_Get = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Accept-Language': 'en-US,en;q=0.5',
     'Accept-Encoding': 'gzip, deflate',
@@ -38,6 +38,7 @@ class StockGetter :
             return response.text 
         else : 
             logger.error("resquest's status code is {}".format(response.status_code))
+            print('error code : wrongUrl, ' +url)
             raise WrongHtml
 
     @staticmethod
@@ -64,7 +65,7 @@ class StockGetter :
     def GetStockNaver(stockName, code) : 
         try : 
             global headers_Get
-            logger.debug('recieved StockName = {}'.format(stockName + ' ' + code))
+            logger.debug('[GetStockNaver] recieved StockName = {}'.format(stockName + ' ' + code))
             s = requests.Session()
             url = "https://polling.finance.naver.com/api/realtime?query=SERVICE_ITEM:" + code
             response = s.get(url, headers=headers_Get)
@@ -87,21 +88,22 @@ class StockGetter :
                 cv = '-'+cv
             msg = "[ " + stockName + " ]  \n" +"KRW" + nv + ", " + cv+ '  (' + cr + '%)'
 
-            return {"stockName": stockName,"InfoMsg": msg, "querySuccess": True}
+            return {"stockName": stockName,"InfoMsg": msg, "querySuccess": True,"isKR":True}
         except Exception as e : 
-            return {"stockName": stockName,"InfoMsg": "Error {}".format(e), "querySuccess": False}
+            return {"stockName": stockName,"InfoMsg": "Error {}".format(e), "querySuccess": False,"isKR":False}
 
     @staticmethod
     def GetStockGoogle(stockName) :
-        # global headers_Get
-        logger.debug('recieved StockName = {}'.format(stockName))
-        s = requests.Session()
+        logger.debug('[GetStockGoogle] recieved StockName = {}'.format(stockName))
+        # s = requests.Session()
         url = 'https://www.google.com/search?q='+stockName+'+stock'
-        response = s.get(url,  headers=headers_Get)
-        html = response.text
-
+        # response = s.get(url,  headers=headers_Get)
+        # html = response.text
+        html= StockGetter.requestsGet(url)
         s = bs(html,'html.parser')
+        print('--'+str(s.select('#knowledge-finance-wholepage__entity-summary > div > g-card-section > div > g-card-section > div.OiIFo > div > div'))+'--')
         if s.select('div.oPhL2e') : 
+            print('--enter selector Google--')
             stockName = s.select('div.oPhL2e')[0].text.strip()
             stockMoney = s.select('span.knFDje')[0].text.strip()
             Exchange = s.select('div.HfMth')[0].text.strip()
@@ -118,10 +120,15 @@ class StockGetter :
             else :
                 infomsg = "[" + stockName +"]" + "\n" + Exchange + "\n" + "[" + Date+"]" + "\n" + stockMoney +" "+ Price + ", " + Move+Percentage +"\n" + "[ Dividend yield ] : " + Dividend + "\n"
 
-            return {"stockName": stockName,"InfoMsg": infomsg, "querySuccess": True}
+            return {"stockName": stockName,"InfoMsg": infomsg, "querySuccess": True,"isKR":False}
         newUrl = list(filter(lambda x : 'investing.com' in x['href'],  list(filter(lambda x : x.get('href'), s.select('a'))) ))
+        print('--enter selector Investing--')
         if newUrl : 
             newUrl = newUrl[0]['href']
+            if len(newUrl.split('https://')) > 1 : 
+                newUrl ='https://'+newUrl.split('https://')[1]
+            if '&' in newUrl :
+                newUrl = newUrl.split('&')[0]            
             s = bs(StockGetter.requestsGet(newUrl),'html.parser')
             stockName = s.select('h1.float_lang_base_1')[0].text
             infomsg = " ["+stockName.strip()+"]\n"
@@ -130,6 +137,6 @@ class StockGetter :
             move = move.text 
             percentage = percentage.text
             infomsg+=price+' '+move+' '+percentage
-            return {"stockName": stockName,"InfoMsg": infomsg, "querySuccess": True}
+            return {"stockName": stockName,"InfoMsg": infomsg, "querySuccess": True,"isKR":False}
         else : 
-            return {"stockName": stockName,"InfoMsg": "Error {}".format("not found stock"), "querySuccess": False}
+            return {"stockName": stockName,"InfoMsg": "Error {}".format("not found stock"), "querySuccess": False,"isKR":False}

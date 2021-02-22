@@ -9,7 +9,7 @@ import re
 # Create your views here.
 
 headers_Get = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Accept-Language': 'en-US,en;q=0.5',
     'Accept-Encoding': 'gzip, deflate',
@@ -44,6 +44,7 @@ class StockRecordGetter :
             return bs(response.text ,'html.parser')
         else : 
             logger.error("resquest's status code is {}".format(response.status_code))
+            print('error code : wrongUrl, ' +url)
             raise WrongHtml
 
     
@@ -140,6 +141,10 @@ class StockRecordGetter :
         newUrl = list(filter(lambda x : 'investing.com' in x['href'],  list(filter(lambda x : x.get('href'), s.select('a'))) ))
         if newUrl : 
             newUrl = newUrl[0]['href']
+            if len(newUrl.split('https://')) > 1 : 
+                newUrl ='https://'+newUrl.split('https://')[1]
+            if len(newUrl.split('historical-data')) > 1 :
+                newUrl = newUrl.split('historical-data')[0] + 'historical-data'            
             s = StockRecordGetter.requestsGet(newUrl)
             stockName = s.select('h1.float_lang_base_1')[0].text
             infomsg = " ["+stockName.strip()+"]\n"
